@@ -159,12 +159,13 @@ print("\nTest gradient à pas fixe")
 print("\nTest gradient à pas optimal")
 
 print("\nTest Section dorée")
-print(sectionDoree(-1,2,f,0.001))
+print(sectionDoree(-1,2,g,0.001))
 
 print("\nTest Newton")
 print(Newton(g, gp, 2, 0.001))
 print(Newton(g, gp, -1, 0.001))
 
+print("\nTest decomp LU")
 A=np.identity(4)
 b=[1,1,1,2]
 print(res_sys_line_triang_sup(A,b))
