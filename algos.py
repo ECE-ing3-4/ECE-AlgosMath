@@ -7,17 +7,9 @@ def gp(x):
     return np.multiply(2,x)
 
 
-def Newton(f, fp, x, e):
-    xold=x
-    x=xold-f(xold)/fp(xold)
 
-    while abs(xold-x)>e:
-        #print(x," ",xold)
-        xold=x
-        x=xold-f(xold)/fp(xold)
 
-    return x
-
+##Algo de descente  PAS FINI
 def descente(x):
     xold=x
     x=xold-f(xold)/fp(xold)
@@ -33,8 +25,27 @@ def descente(x):
 
     return x
 
+##Algo de Newton
+def Newton(f, fp, x, e):
+    xold=x
+    x=xold-f(xold)/fp(xold)
+
+    while abs(xold-x)>e:
+        print(x," ",xold)
+        xold=x
+        x=xold-f(xold)/fp(xold)
+
+    return x
+
+##Algo du gradient descente à pas fixe
 
 
+##Algo du gradient descente à pas optimal
 
 
-print(Newton(g, gp, 1, 0.001))
+##Méthode de section dorée
+
+
+##tests
+print(Newton(g, gp, 2, 0.001))
+print(Newton(g, gp, -1, 0.001))
