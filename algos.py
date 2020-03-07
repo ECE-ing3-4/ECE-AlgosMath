@@ -48,7 +48,7 @@ def gradientPasFixe(f, fp, x, eCible):
 
     return x
 
-##Méthode de section dorée
+##Méthode de section dorée MARCHE PAS
 def sectionDoree(a,b,f,e):
     p=1.618
     xm = p*a + (1-p)*b
