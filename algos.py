@@ -1,5 +1,10 @@
-import numpy as np #seulement pour : decomposition LU
+##
+# Algos fait par :
+#    Alexis Direz
+# et Neil Segard
 
+
+import numpy as np
 
 def g(x):
     return np.square(x)
@@ -42,7 +47,7 @@ def gradientPasFixe(f, fp, x, eCible, alpha):
 
     return x
 
-## Algo du gradient à pas optimal  PAS FINI
+## Algo du gradient à pas optimal
 def gradientPasOptimal(f, fp, x, eCible):
     e=2*eCible
 
@@ -64,7 +69,7 @@ def gradientPasOptimal(f, fp, x, eCible):
 
     return x
 
-## Méthode de section dorée MARCHE PAS
+## Méthode de section dorée
 def sectionDoree(a,b,f,e):
     p=1.618
     xm = p*a + (1-p)*b
@@ -176,7 +181,7 @@ def descente(f_multi_var,X, alpha,e):
         print(X," ",Xold)
         W=np.gradient(f_multi_var(X))
         for i in range(N):
-            if (W[i]>0):     #je choisis de construire d avec des 1 ou -1
+            if (W[i]>0):     #je choisis de construir d avec des 1 ou -1
                 d=1
             else:
                 d=-1
