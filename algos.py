@@ -1,5 +1,6 @@
 import numpy as np #seulement pour : decomposition LU
 
+
 def g(x):
     return np.square(x)
 
@@ -12,43 +13,74 @@ def gradfa(X):
     d=(1+a*X[0]**2+X[1]**2)**2
     return 2/d*array([a,1])*X
 
-## Algo de descente  PAS FINI
-def descente(x):
-    xold=x
-    x=xold-f(xold)/fp(xold)
+def h(X): #X de taille 2x1
+    x1=X[0]
+    x2=X[1]
+    h = 8*x1**2 -3*x2 + 4 * x1 *x2
+    return h
 
-    while abs(xold-x)>e:
+def norme_deux(X,Xold):
+    s=0
+    N=np.shape(X)[0]
+    for i in range(N):
+        s+=(X-Xold)**2
+    return np.sqrt(s)
+
+##Algo de descente (vectoriel)
+def descente(f_multi_var,X, alpha):
+    N=np.shape(X)[0]
+    Xold=X
+    fp=np.gradient(f_multi_var(X))  #probleme au niveau du gradiant
+    for i in range(N):
+        X[i]=Xold[i]-(f_multi_var(Xold)[i])/(fp(Xold)[i])
+    d=[]
+    approx = norme_deux(X,X_old)
+    while approx>e:
         print(x," ",xold)
+        W=np.gradient(f_multo_var(X))
+        for i in range(N):
+            if (W[i]>0):     #je choisis de construire d avec des 1 ou -1
+                d[i]=1
+            else:
+                d[i]=-1
+        Xold=X
+        X=Xold + alpha*d
 
-        d=1#A FAIRE
-        a=1#A FAIRE
+    return X
 
-        xold=x
-        x=xold + a*d
-
-    return x
-
-## Algo du gradient à pas fixe  PAS FINI
-
+## Algo du gradient à pas fixe
 def gradientPasFixe(f, fp, x, eCible, alpha):
     e=2*eCible
-
-    while e>eCible:
+    i=0
+    if(alpha<1 or alpha<0 ):
+        print("Erreur choix du alpha")
+        return 0
+    while (e>eCible and i<n):
         #print(e)
-        w = 1#A FAIRE
+        w = -fp(x)
         x = x + alpha * w
         e = abs(alpha * w)
+        i+=1
 
     return x
 
 ## Algo du gradient à pas optimal  PAS FINI
-def gradientPasFixe(f, fp, x, eCible):
+def gradientPasOptimal(f, fp, x, eCible):
     e=2*eCible
 
     while e>eCible:
         #print(e)
-        w = 1#A FAIRE
-        alpha=1#A FAIRE
+        w = -fp(x)
+        alpha=1
+        #print(alpha)
+        s = f(x+alpha*w)-f(x)
+        for i in range(1,1000):
+            alpha_bis = (1-i/1000)
+            s1 = f(x+alpha_bis*w)-f(x)
+            if (s1 < s):
+                alpha=alpha_bis
+                s=s1
+               # print(alpha)
         x = x + alpha * w
         e = abs(alpha * w)
 
@@ -152,12 +184,15 @@ def decomposition_LU(A):
     return L,U
 
 ##tests
-print("Test Descente")
 
+X=[-3,7]
+
+print("Test Descente")
+print(descente(h,X,0.05))
 print("\nTest gradient à pas fixe")
 
 print("\nTest gradient à pas optimal")
-
+print(gradientPasOptimal(g,gp,10,0.0001))
 print("\nTest Section dorée")
 print(sectionDoree(-1,2,g,0.001))
 
