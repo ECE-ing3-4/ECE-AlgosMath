@@ -26,30 +26,6 @@ def norme_deux(X,Xold):
         s+=(X[i]-Xold[i])**2
     return np.sqrt(s)
 
-##Algo de descente (vectoriel)
-def descente(f_multi_var,X, alpha,e):
-    N=len(X)
-    Xold=np.copy(X)
-    fp=np.gradient(f_multi_var(X))
-    for i in range(N):
-        X[i]=Xold[i]-(f_multi_var(Xold)[i])/(fp[i])
-
-    d=0
-    print(X)
-    approx = norme_deux(X,Xold)
-    while approx>e:
-        print(X," ",Xold)
-        W=np.gradient(f_multi_var(X))
-        for i in range(N):
-            if (W[i]>0):     #je choisis de construire d avec des 1 ou -1
-                d=1
-            else:
-                d=-1
-        Xold=X
-        X=Xold + alpha*d
-
-    return X
-
 ## Algo du gradient à pas fixe
 def gradientPasFixe(f, fp, x, eCible, alpha):
     e=2*eCible
@@ -185,12 +161,33 @@ def decomposition_LU(A):
 
     return L,U
 
-##tests
+##Algo de descente (vectoriel)
+def descente(f_multi_var,X, alpha,e):
+    N=len(X)
+    Xold=np.copy(X)
+    fp=np.gradient(f_multi_var(X))
+    for i in range(N):
+        X[i]=Xold[i]-(f_multi_var(Xold)[i])/(fp[i])
 
+    d=0
+    print(X)
+    approx = norme_deux(X,Xold)
+    while approx>e:
+        print(X," ",Xold)
+        W=np.gradient(f_multi_var(X))
+        for i in range(N):
+            if (W[i]>0):     #je choisis de construire d avec des 1 ou -1
+                d=1
+            else:
+                d=-1
+        Xold=X
+        X=Xold + alpha*d
+
+    return X
+
+##tests
 X=np.asarray([-3,7])
 
-print("Test Descente")
-print(descente(g,X,0.05,0.1))
 print("\nTest gradient à pas fixe")
 
 print("\nTest gradient à pas optimal")
@@ -207,3 +204,6 @@ A=np.identity(4)
 b=[1,1,1,2]
 print(res_sys_line_triang_sup(A,b))
 print(res_sys_line_diago(A,b))
+
+print("Test Descente")
+print(descente(g,X,0.05,0.1))
