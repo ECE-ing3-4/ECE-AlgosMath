@@ -21,28 +21,30 @@ def h(X): #X de taille 2x1
 
 def norme_deux(X,Xold):
     s=0
-    N=np.shape(X)[0]
+    N=len(X)
     for i in range(N):
-        s+=(X-Xold)**2
+        s+=(X[i]-Xold[i])**2
     return np.sqrt(s)
 
 ##Algo de descente (vectoriel)
-def descente(f_multi_var,X, alpha):
-    N=np.shape(X)[0]
-    Xold=X
-    fp=np.gradient(f_multi_var(X))  #probleme au niveau du gradiant
+def descente(f_multi_var,X, alpha,e):
+    N=len(X)
+    Xold=np.copy(X)
+    fp=np.gradient(f_multi_var(X))
     for i in range(N):
-        X[i]=Xold[i]-(f_multi_var(Xold)[i])/(fp(Xold)[i])
-    d=[]
-    approx = norme_deux(X,X_old)
+        X[i]=Xold[i]-(f_multi_var(Xold)[i])/(fp[i])
+
+    d=0
+    print(X)
+    approx = norme_deux(X,Xold)
     while approx>e:
-        print(x," ",xold)
-        W=np.gradient(f_multo_var(X))
+        print(X," ",Xold)
+        W=np.gradient(f_multi_var(X))
         for i in range(N):
             if (W[i]>0):     #je choisis de construire d avec des 1 ou -1
-                d[i]=1
+                d=1
             else:
-                d[i]=-1
+                d=-1
         Xold=X
         X=Xold + alpha*d
 
@@ -185,10 +187,10 @@ def decomposition_LU(A):
 
 ##tests
 
-X=[-3,7]
+X=np.asarray([-3,7])
 
 print("Test Descente")
-print(descente(h,X,0.05))
+print(descente(g,X,0.05,0.1))
 print("\nTest gradient à pas fixe")
 
 print("\nTest gradient à pas optimal")
