@@ -8,4 +8,6 @@ DM1 - Algos de recherche de minimum
 
 DM2 - Algos d'optimisation sous contraintes
 * Algo du gradient descente projeté
-* Algo d'Uzawa
+* Algo d'Uzawa avec contrainte d'inegalite
+* Algo d'Uzawa avec contrainte d'egalite
+* Algo d'Uzawa avec contrainte mixte
