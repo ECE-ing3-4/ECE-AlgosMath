@@ -99,7 +99,7 @@ def gradientDescenteProjete(contraintes_g, precision, X0):
 C1 = -1 * np.eye(N)
 
 def g(X):
-    var = np.dot(C,X)
+    var = np.dot(C1,X)
     for i in range(N):
         var-=G[i]
     return var
@@ -143,7 +143,7 @@ def Uzawa_contrainte_ineg(X0, tolerance):
     test_mu = 1
     compteur = 0
 
-    while((test_x>tolerance or test_mu>tolerance) and compteur < 500): # pas plus de 500 itérations on pourra augmanter au besoin
+    while((test_x>tolerance or test_mu>tolerance) and compteur < 500): # pas plus de 500 itérations on pourra augmenter au besoin
         Mu = Mu1
         X = X1
         # print("lool")
