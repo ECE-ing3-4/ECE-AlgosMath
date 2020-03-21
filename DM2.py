@@ -8,11 +8,19 @@
 import numpy as np
 from copy import deepcopy
 
-N = 4
+N = 8
+h=1/(N+1)
 
-X_first = np.array([1,7,3,4], float)
-A = np.arange(N**2).reshape(N,N)
+X_first = np.array([1,7,3,4,8,7,6,2], float)
+A = 2 * np.eye(N).reshape(N,N)
+for i in range(N):
+    for j in range(N):
+        if (j==i+1 or j==i-1):
+            A[i,j]=-1
+A= A / (h)**2
 b = -8*np.ones(N).reshape(N,1)
+
+
 def J(X):
     return 0.5 * np.vdot(np.dot(A,X),X) + np.vdot(b,X)
 def grad_J(X):
@@ -43,12 +51,12 @@ def projection(X,plan):
 
     return (prod_scal(X,plan)/norm)*plan
 
-def G(X):
-    n = len(X)
-    # print(n)
-    tab = np.zeros(n)
-    for i in range(n):
-        tab[i] = X[i] + X[i-1]*(-1)**i  #je chois les contraintes valant xi plus ou moins la valeur du xi precedent
+def G():
+    tab = np.zeros(N)
+    for i in range(N):
+        t = (i+1)*h
+        tab[i] = -1 + max(0, -10 * (t-0.4)**(2) + 0.625 )
+
     return tab
 
 
@@ -82,9 +90,45 @@ def gradientDescenteProjete(contraintes_g, precision, X0):
     return X
 
 ## Algo d'Uzawa
-    #1 mettre sous la forme CX <= g les contraintes C1
-    #2 mettre sous la forme CX = 0 les contraintes C2
+
+#1 mettre sous la forme CX <= g les contraintes C1
+
+C1 = -1 * np.eye(N)
+
+def g(X):
+    var = np.dot(C,X)
+    for i in range(N):
+        var-=G()[i]
+    return var
+
+#2 mettre sous la forme CX = 0 les contraintes C2
+
+C2 = np.zeros((N,N))
+for i in range(N):
+    for j in range(N):
+        if (i<3):
+            if (j+i==4+i):
+                C2[i,(j+i)]=1
+                C2[i,(j+i+1)]=-1
+
+def h(X):
+    return np.dot(C2,X)
+
+def Lagrangien(X,L1,Mu):
+    return J(X) + prod_scal(L1,h(X))+prod_scal(Mu,g(X))
+
+def Grad_x_Lagrangien(X,L1,Mu):
+    return np.dot(A,X)-b + np.dot(np.transpose(C2),L1) + np.dot(np.transpose(C1),Mu)
+
+def Grad_L1_Lagrangien(X,L1,Mu):
+    return np.dot(np.transpose(X),np.transpose(C2))
+
+def Grad_Mu_Lagrangien(X,L1,Mu):
+    return np.transpose(np.dot(C1,X) - g(X))
+
     #3 Programmer uzawa pour les contraintes d'inégalité
+
+
     #4 Programmer uzawa pour les contraintes d'égalité
     #5 Programmer uzawa pour les contraintes mixtes
 def Uzawa_simple():
