@@ -11,7 +11,7 @@ from copy import deepcopy
 N = 8
 h=1/(N+1)
 
-X_first = np.array([1,7,3,4,8,7,6,2], float)
+X_first = np.random.randint(100,size=(N,1))
 A = 2 * np.eye(N).reshape(N,N)
 for i in range(N):
     for j in range(N):
@@ -128,20 +128,27 @@ def Grad_Mu_Lagrangien(X,L1,Mu):
 def Uzawa_contrainte_ineg(X0, tolerance):
     X=deepcopy(X0)
     X1=deepcopy(X)
+
     pas = 0.05
+
     Mu=np.random.uniform(0,100,N)
     Mu1 = Mu=np.random.uniform(0,100,N)
+
     test_x = 1
     test_mu = 1
     compteur = 0
+
     while((test_x>tolerance or test_mu>tolerance) and compteur < 500): # pas plus de 500 itérations on pourra augmanter au besoin
         Mu = Mu1
         X = X1
         # print("lool")
+
         Mu1 += pas * (np.dot(C1,X) - g(X) )
         for i in range(N): #cherche le max entre 0 et les mu_i
             Mu1[i]=max(0,Mu1[i])
-        X1 = np.dot(np.linalg.inv(A) ,b + np.dot(np.transpose(C1),Mu) )
+
+        X1 = np.dot(np.linalg.inv(A) ,b - np.dot(np.transpose(C1),Mu) )
+
         test_x = norm_eucl(X1,X)
         test_mu = norm_eucl(Mu,Mu1)
         compteur+=1
@@ -149,13 +156,76 @@ def Uzawa_contrainte_ineg(X0, tolerance):
     return X1,Mu1
 
     #4 Programmer uzawa pour les contraintes d'égalité
+
+def Uzawa_contrainte_eg(X0, tolerance):
+    X=deepcopy(X0)
+    X1=deepcopy(X)
+    pas = 0.05
+    L=np.random.uniform(0,10,N)
+    L1 = Mu=np.random.uniform(0,10,N)
+    test_x = 1
+    test_l = 1
+    compteur = 0
+    while((test_x>tolerance or test_l>tolerance) and compteur < 500): # pas plus de 500 itérations on pourra augmanter au besoin
+        L = L1
+        X = X1
+
+        L1 += pas * (h(X))
+
+        X1 = np.dot(np.linalg.inv(A) ,b - np.dot(np.transpose(C2),L) )
+
+        test_x = norm_eucl(X1,X)
+        test_l = norm_eucl(L,L1)
+
+        compteur+=1
+    print(compteur)
+    return X1,L1
+
     #5 Programmer uzawa pour les contraintes mixtes
-def Uzawa_simple():
-    return 1
+
+def Uzawa_contrainte_mixtes(X0, tolerance):
+    X=deepcopy(X0)
+    X1=deepcopy(X)
+
+    Mu=np.random.uniform(0,10,N)
+    Mu1 = Mu=np.random.uniform(0,10,N)
+
+    pas = 0.05
+
+    L=np.random.uniform(0,10,N)
+    L1 = Mu=np.random.uniform(0,10,N)
+
+    test_mu = 1
+    test_x = 1
+    test_l = 1
+
+    compteur = 0
+    while((test_x>tolerance or test_mu>tolerance) and compteur < 500): # pas plus de 500 itérations on pourra augmanter au besoin
+        L = L1
+        X = X1
+        Mu1 = Mu
+
+        L1 += pas * h(X) # = pas * (np.dot(C2,X))
+
+        Mu1 += pas * g(X) # = pas * np.dot(C1,X)
+        for i in range(N): #cherche le max entre 0 et les mu_i
+            Mu1[i]=max(0,Mu1[i])
+
+        X1 = np.dot(np.linalg.inv(A) ,b - np.dot(np.transpose(C2),L) - np.dot(np.transpose(C1),Mu) )
+
+        test_x = norm_eucl(X1,X)
+        test_l = norm_eucl(L,L1)
+        test_mu = norm_eucl(Mu,Mu1)
+
+        compteur+=1
+    print(compteur)
+    return X1,L1
 
 
 
 ## Tests
 # print(gradientDescenteProjete())
 
-Uzawa_contrainte_ineg(X_first,0.01)
+# Uzawa_contrainte_ineg(X_first,0.01)
+Uzawa_contrainte_eg(X_first,0.01)
+Uzawa_contrainte_mixtes(X_first,0.01)
