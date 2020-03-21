@@ -59,27 +59,32 @@ for i in range(N):
 
 
 ## Algo du gradient descente projeté
+
 def gradientDescenteProjete(contraintes_g, precision, X0):
+
     X=deepcopy(X0)
-    Y=deepcopy(X0+7)  #arbitraire de prendre 7
-    pas = 0.05 #aussi arbitraire
+    X1 = deepcopy(X)
+    pas = 0.05 # arbitraire
+
     n1=np.shape(X)[0]
     n2 = np.shape(contraintes_g)[0]
-    residu = norm_eucl(X,Y)
+
+    residu = 10 # initialisation
+
     Proj = np.zeros(np.shape(X0))
     compteur = 0
     while(residu > precision):
-        X1 = deepcopy(X)
-        X-= pas * grad_J(X)
+
+        X1= X1 - (pas * grad_J(X) ) * X1
         for i in range(n2):
-            if (X[i] < contraintes_g[i]):
+            if (X1[i] < contraintes_g[i]):
                 Proj[i]=contraintes_g[i]
             else:
-                Proj[i]=X[i]
+                Proj[i]=X1[i]
         if(n2<n1):
             for i in range(n2,n1,1):
-                Proj[i]=X[i]
-        residu = norm_eucl(X,Proj)
+                Proj[i]=X1[i]
+        residu = norm_eucl(X1,Proj)
         #contraintes_g = G(X)
         compteur+=1
     print(residu)
@@ -224,8 +229,8 @@ def Uzawa_contrainte_mixtes(X0, tolerance):
 
 
 ## Tests
-# print(gradientDescenteProjete())
+gradientDescenteProjete(g(X_first),0.01,X_first)
 
 # Uzawa_contrainte_ineg(X_first,0.01)
-Uzawa_contrainte_eg(X_first,0.01)
-Uzawa_contrainte_mixtes(X_first,0.01)
+# Uzawa_contrainte_eg(X_first,0.01)
+# Uzawa_contrainte_mixtes(X_first,0.01)
