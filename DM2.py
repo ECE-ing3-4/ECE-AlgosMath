@@ -51,13 +51,11 @@ def projection(X,plan):
 
     return (prod_scal(X,plan)/norm)*plan
 
-def G():
-    tab = np.zeros(N)
-    for i in range(N):
-        t = (i+1)*h
-        tab[i] = -1 + max(0, -10 * (t-0.4)**(2) + 0.625 )
+G = np.zeros(N) #creation des gi dans un vecteur
+for i in range(N):
+    t = (i+1)*h
+    G[i] = -1 + max(0, -10 * (t-0.4)**(2) + 0.625 )
 
-    return tab
 
 
 ## Algo du gradient descente projeté
@@ -98,7 +96,7 @@ C1 = -1 * np.eye(N)
 def g(X):
     var = np.dot(C,X)
     for i in range(N):
-        var-=G()[i]
+        var-=G[i]
     return var
 
 #2 mettre sous la forme CX = 0 les contraintes C2
@@ -127,7 +125,28 @@ def Grad_Mu_Lagrangien(X,L1,Mu):
     return np.transpose(np.dot(C1,X) - g(X))
 
     #3 Programmer uzawa pour les contraintes d'inégalité
-
+def Uzawa_contrainte_ineg(X0, tolerance):
+    X=deepcopy(X0)
+    X1=deepcopy(X)
+    pas = 0.05
+    Mu=np.random.uniform(0,100,N)
+    Mu1 = Mu=np.random.uniform(0,100,N)
+    test_x = 1
+    test_mu = 1
+    compteur = 0
+    while((test_x>tolerance or test_mu>tolerance) and compteur < 500): # pas plus de 500 itérations on pourra augmanter au besoin
+        Mu = Mu1
+        X = X1
+        # print("lool")
+        Mu1 += pas * (np.dot(C1,X) - g(X) )
+        for i in range(N): #cherche le max entre 0 et les mu_i
+            Mu1[i]=max(0,Mu1[i])
+        X1 = np.dot(np.linalg.inv(A) ,b + np.dot(np.transpose(C1),Mu) )
+        test_x = norm_eucl(X1,X)
+        test_mu = norm_eucl(Mu,Mu1)
+        compteur+=1
+    print(compteur)
+    return X1,Mu1
 
     #4 Programmer uzawa pour les contraintes d'égalité
     #5 Programmer uzawa pour les contraintes mixtes
@@ -138,4 +157,5 @@ def Uzawa_simple():
 
 ## Tests
 # print(gradientDescenteProjete())
-# print(Uzawa())
+
+Uzawa_contrainte_ineg(X_first,0.01)
