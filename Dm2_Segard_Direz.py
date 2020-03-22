@@ -11,7 +11,7 @@ from copy import deepcopy
 N = 8
 h=1/(N+1)
 
-X_first = np.random.uniform(0,100,size=(N,1))
+X_first = np.random.uniform(0,100,size=N)
 A = 2 * np.eye(N)
 
 for i in range(N):
@@ -20,7 +20,7 @@ for i in range(N):
             A[i,j]=-1
 
 A= A / (h)**2
-B = -8*np.ones((N,1))
+B = -8*np.ones(N)
 
 def J(X):
     return 0.5 * np.vdot(np.dot(A,X),X) + np.vdot(B,X)
@@ -64,13 +64,15 @@ def gradientDescenteProjete(contraintes_g, precision, X0):
     compteur = 0
     while(residu > precision):
         X2 =X1
-        X1= X1 - (pas * grad_J(X1) )
+
 
         residu = 0
 
         for i in range(n2):
-            X1[i][0] = max(X1[i][0],contraintes_g[i])
-            residu+=(X1[i][0]-X2[i][0])**2
+            X1[i] =X1[i] - pas * (grad_J(X1))[i]
+            if (X1[i]< contraintes_g[i]):
+                X1[i] = contraintes_g[i]
+            residu+=(X1[i]-X2[i])**2
         residu = np.sqrt(residu)
         #residu = norm_deux(X2,X1)
         compteur+=1
@@ -121,7 +123,7 @@ def Grad_Mu_Lagrangien(X,L1,Mu):
 #3 Programmer uzawa pour les contraintes d'inégalité
 def Uzawa_contrainte_ineg(X0, tolerance):
     X1=deepcopy(X0)
-
+    X= deepcopy(X1)
     pas = 0.05
 
     Mu1 = np.random.uniform(0,100,N)
@@ -132,11 +134,11 @@ def Uzawa_contrainte_ineg(X0, tolerance):
 
     while((test_x>tolerance or test_mu>tolerance) and compteur < 500): # pas plus de 500 itérations on pourra augmenter au besoin
         Mu = deepcopy(Mu1)
-        X = deepcopy(X1)
+        X = X1
 
         tmp=(pas * (np.dot(C1,X) - g(X)))
-        Mu1 = Mu1 + tmp.T
-        Mu1=Mu1[0]
+        Mu1 = Mu1 + tmp
+
 
         for i in range(N): #cherche le max entre 0 et les mu_i
             Mu1[i]=max(0,Mu1[i])
@@ -148,7 +150,7 @@ def Uzawa_contrainte_ineg(X0, tolerance):
         compteur+=1
 
     #print(compteur)
-    return X1,Mu1
+    return  X1,Mu1
 
 #4 Programmer uzawa pour les contraintes d'égalité
 def Uzawa_contrainte_eg(X0, tolerance):
@@ -201,7 +203,6 @@ def Uzawa_contrainte_mixtes(X0, tolerance):
 
         tmp=(pas * g(X)).T # = (pas * (np.dot(C1,X))).T
         Mu1 = Mu1 + tmp
-        Mu1=Mu1[0]
 
         for i in range(N): #cherche le max entre 0 et les mu_i
             Mu1[i]=max(0,Mu1[i])
@@ -221,10 +222,10 @@ def Uzawa_contrainte_mixtes(X0, tolerance):
 print(gradientDescenteProjete(G,0.01,X_first))
 print()
 
-# print(Uzawa_contrainte_ineg(X_first,0.01))
-# print()
-#
-# print(Uzawa_contrainte_eg(X_first,0.01))
-# print()
-#
-# print(Uzawa_contrainte_mixtes(X_first,0.01))
+print(Uzawa_contrainte_ineg(X_first,0.01))
+print()
+
+print(Uzawa_contrainte_eg(X_first,0.01))
+print()
+
+print(Uzawa_contrainte_mixtes(X_first,0.01))
